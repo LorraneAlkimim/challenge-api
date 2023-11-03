@@ -10,11 +10,11 @@ class Person(models.Model):
   email = models.EmailField()
   phone = PhoneNumberField(null=False, blank=False, unique=True)
 
-  def __str__(self):
-    return self.name
-
   class Meta:
     abstract = True
+
+  def __str__(self):
+    return self.name
 
 
 class Customer(Person):
@@ -22,27 +22,80 @@ class Customer(Person):
 
 
 class Seller(Person):
-  seller_code = models.AutoField(primary_key=True)
+  seller_code = models.AutoField(primary_key=True, editable=False)
+
+
+class CommissionPercentageByWeekday(models.Model):
+  WEEKDAYS = (
+    (0, 'Monday'),
+    (1, 'Tuesday'),
+    (2, 'Wednesday'),
+    (3, 'Thursday'),
+    (4, 'Friday'),
+    (5, 'Saturday'),
+    (6, 'Sunday'),
+  )
+
+  weekday = models.PositiveIntegerField(choices=WEEKDAYS)
+  minimum_percentage = models.DecimalField(max_digits=4, decimal_places=2)
+  maximum_percentage = models.DecimalField(max_digits=4, decimal_places=2)
+
+  def __str__(self):
+    return self.get_weekday_display()
+  
+  class Meta:
+        unique_together = ('weekday',)
 
 
 class Product(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  code = models.CharField(max_length = 50)
+  code = models.CharField(max_length = 50, unique=True)
   description = models.CharField(max_length = 100)
   price = models.DecimalField(max_digits=10, decimal_places=2)
   commission_percentage = models.DecimalField(max_digits=4, decimal_places=2)
 
   def __str__(self):
     return self.description
+  
+  def calculate_product_commission_percentage(self):
+    """
+        Calculates the applicable commission percentage based on the current day of the week.
+
+        Returns:
+        Decimal: The applicable commission percentage.
+
+        This method checks the current day of the week and if there is a percentage
+        commission associated with that day of the week, calculates the minimum
+        commission or maximum if the percentage of the product is outside this
+        range, or returns the product's own percentage if it is within the range.
+    """
+
+    current_weekday = datetime.today().weekday()
+
+    try:
+      percentages_by_weekday = CommissionPercentageByWeekday.objects.get(weekday=current_weekday)
+      minimum_percentage = percentages_by_weekday.minimum_percentage
+      maximum_percentage = percentages_by_weekday.maximum_percentage
+      
+      if self.commission_percentage < minimum_percentage:
+        return minimum_percentage
+      elif self.commission_percentage > maximum_percentage:
+        return maximum_percentage
+      else:
+        return self.commission_percentage
+    except CommissionPercentageByWeekday.DoesNotExist:
+      return self.commission_percentage
 
 
 class Sale(models.Model):
-  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  invoice_code = models.CharField(max_length = 50)
+  invoice_code = models.AutoField(primary_key=True, editable=False)
   date = models.DateTimeField(default=datetime.now, blank=True)
   customer = models.ForeignKey(Customer, on_delete=models.RESTRICT)
   seller = models.ForeignKey(Seller, on_delete=models.RESTRICT)
   products = models.ManyToManyField(Product, through='SaleProduct')
+
+  def __str__(self):
+    return f"Sale {self.invoice_code}"
 
   def calculate_sale_total_value(self):
     total_value = sum(product.calculate_total_price() for product in self.saleproduct_set.all())
@@ -62,15 +115,15 @@ class SaleProduct(models.Model):
   sale = models.ForeignKey('Sale', on_delete=models.CASCADE)
   quantity = models.IntegerField(default=1)
 
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=('product', 'sale'), name='once_per_sale_product')
+    ]
+
   def calculate_total_price(self):
     return self.product.price * self.quantity
   
   def calculate_product_commission(self):
     product_total_price = self.calculate_total_price()
-    product_commission = (self.product.commission_percentage/100) * product_total_price
+    product_commission = (self.product.calculate_product_commission_percentage() / 100) * product_total_price
     return round(product_commission, 2)
-
-  class Meta:
-    constraints = [
-      models.UniqueConstraint(fields=('product', 'sale'), name='once_per_sale_product')
-    ]
