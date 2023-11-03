@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'amcom_project.core',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
