@@ -6,8 +6,8 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Person(models.Model):
-  name = models.CharField(max_length = 100)
-  email = models.EmailField()
+  name = models.CharField(max_length = 100, null=False, blank=False, unique=True)
+  email = models.EmailField(null=False, blank=False, unique=True)
   phone = PhoneNumberField(null=False, blank=False, unique=True)
 
   class Meta:
