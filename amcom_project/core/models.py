@@ -36,23 +36,19 @@ class CommissionPercentageByWeekday(models.Model):
     (6, 'Sunday'),
   )
 
-  weekday = models.PositiveIntegerField(choices=WEEKDAYS)
-  minimum_percentage = models.DecimalField(max_digits=4, decimal_places=2)
-  maximum_percentage = models.DecimalField(max_digits=4, decimal_places=2)
+  weekday = models.PositiveIntegerField(choices=WEEKDAYS, unique=True, null=False, blank=False)
+  minimum_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
+  maximum_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
 
   def __str__(self):
     return self.get_weekday_display()
-  
-  class Meta:
-        unique_together = ('weekday',)
-
 
 class Product(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  code = models.CharField(max_length = 50, unique=True)
-  description = models.CharField(max_length = 100)
-  price = models.DecimalField(max_digits=10, decimal_places=2)
-  commission_percentage = models.DecimalField(max_digits=4, decimal_places=2)
+  code = models.CharField(max_length = 50, null=False, blank=False, unique=True)
+  description = models.CharField(max_length = 100, null=False, blank=False)
+  price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+  commission_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
 
   def __str__(self):
     return self.description
@@ -90,8 +86,8 @@ class Product(models.Model):
 class Sale(models.Model):
   invoice_code = models.AutoField(primary_key=True, editable=False)
   date = models.DateTimeField(default=datetime.now, blank=True)
-  customer = models.ForeignKey(Customer, on_delete=models.RESTRICT)
-  seller = models.ForeignKey(Seller, on_delete=models.RESTRICT)
+  customer = models.ForeignKey(Customer, on_delete=models.RESTRICT, null=False, blank=False)
+  seller = models.ForeignKey(Seller, on_delete=models.RESTRICT, null=False, blank=False,)
   products = models.ManyToManyField(Product, through='SaleProduct')
 
   def __str__(self):
