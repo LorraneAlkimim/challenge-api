@@ -13,6 +13,11 @@ class SellerSerializer(serializers.ModelSerializer):
     fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
+
+  commission_percentage = serializers.SerializerMethodField()
   class Meta:
     model = Product
     fields = '__all__'
+    
+  def get_commission_percentage(self, obj):
+    return obj.calculate_product_commission_percentage()
