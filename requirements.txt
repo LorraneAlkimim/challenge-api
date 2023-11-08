@@ -1,9 +1,16 @@
 asgiref==3.7.2
+black==23.11.0
+click==8.1.7
 Django==4.2.6
 django-filter==23.3
 django-phonenumber-field==7.2.0
 djangorestframework==3.14.0
+mypy-extensions==1.0.0
+packaging==23.2
+pathspec==0.11.2
 phonenumbers==8.13.24
+platformdirs==3.11.0
 pytz==2023.3.post1
 sqlparse==0.4.4
+tomli==2.0.1
 typing_extensions==4.8.0

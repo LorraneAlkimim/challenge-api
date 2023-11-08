@@ -4,19 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0004_alter_customer_email_alter_customer_name_and_more'),
+        ("core", "0004_alter_customer_email_alter_customer_name_and_more"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='commissionpercentagebyweekday',
+            name="commissionpercentagebyweekday",
             unique_together=set(),
         ),
         migrations.AlterField(
-            model_name='commissionpercentagebyweekday',
-            name='weekday',
-            field=models.PositiveIntegerField(choices=[(0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')], unique=True),
+            model_name="commissionpercentagebyweekday",
+            name="weekday",
+            field=models.PositiveIntegerField(
+                choices=[
+                    (0, "Monday"),
+                    (1, "Tuesday"),
+                    (2, "Wednesday"),
+                    (3, "Thursday"),
+                    (4, "Friday"),
+                    (5, "Saturday"),
+                    (6, "Sunday"),
+                ],
+                unique=True,
+            ),
         ),
     ]
