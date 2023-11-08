@@ -82,3 +82,33 @@ class SaleUpdateViewset(APIView):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommissionViewset(APIView):
+  filter_backends = [DjangoFilterBackend]
+
+  def get(self, request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    sellers = Seller.objects.all()
+    results = []
+
+    for seller in sellers:
+      sales = Sale.objects.filter(seller=seller, date__range=(start_date, end_date))
+      sales_quantity = sales.count()
+      
+      total_commission = sum(sale.calculate_total_commission() for sale in sales)
+
+      seller_data = {
+        'seller_code': seller.seller_code,
+        'name': seller.name
+      }
+      result = {
+        'seller': seller_data,
+        'sales_quantity': sales_quantity,
+        'value': total_commission
+      }
+
+      results.append(result)
+
+    return Response(results)
