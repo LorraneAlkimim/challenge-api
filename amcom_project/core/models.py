@@ -20,9 +20,17 @@ class Person(models.Model):
 class Customer(Person):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+  class Meta:
+    ordering = ['name']
+    db_table = 'customer'
+
 
 class Seller(Person):
   seller_code = models.AutoField(primary_key=True, editable=False)
+
+  class Meta:
+    ordering = ['seller_code', 'name']
+    db_table = 'seller'
 
 
 class CommissionPercentageByWeekday(models.Model):
@@ -40,8 +48,12 @@ class CommissionPercentageByWeekday(models.Model):
   minimum_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
   maximum_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
 
+  class Meta:
+    db_table = 'commission_percentage_by_weekday'
+
   def __str__(self):
     return self.get_weekday_display()
+
 
 class Product(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -49,6 +61,10 @@ class Product(models.Model):
   description = models.CharField(max_length = 100, null=False, blank=False)
   price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
   commission_percentage = models.DecimalField(max_digits=4, decimal_places=2, null=False, blank=False)
+
+  class Meta:
+    ordering = ['code', 'description']
+    db_table = 'product'
 
   def __str__(self):
     return self.description
@@ -90,6 +106,10 @@ class Sale(models.Model):
   seller = models.ForeignKey(Seller, on_delete=models.RESTRICT, null=False, blank=False,)
   products = models.ManyToManyField(Product, through='SaleProduct')
 
+  class Meta:
+    ordering = ['date', 'invoice_code']
+    db_table = 'sale'
+
   def __str__(self):
     return f"Sale {self.invoice_code}"
 
@@ -112,6 +132,7 @@ class SaleProduct(models.Model):
   quantity = models.IntegerField(default=1)
 
   class Meta:
+    db_table = 'sale_product'
     constraints = [
       models.UniqueConstraint(fields=('product', 'sale'), name='once_per_sale_product')
     ]
