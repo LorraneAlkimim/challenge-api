@@ -2,21 +2,31 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .serializers import CustomerSerializer, SellerSerializer, ProductSerializer, SaleSerializer, SaleCreateSerializer, SaleUpdateSerializer
 from .models import Customer, Seller, Product, Sale
+from .filters import PersonFilter, ProductFilter
 
 
 class CustomerViewset(viewsets.ModelViewSet):
   queryset = Customer.objects.all()
   serializer_class = CustomerSerializer
+  filter_backends = [DjangoFilterBackend]
+  filterset_class = PersonFilter
 
 class SellerViewset(viewsets.ModelViewSet):
   queryset = Seller.objects.all()
   serializer_class = SellerSerializer
+  filter_backends = [DjangoFilterBackend]
+  filterset_class = PersonFilter
 
 class ProductViewset(viewsets.ModelViewSet):
   queryset = Product.objects.all()
   serializer_class = ProductSerializer
+  filter_backends = [DjangoFilterBackend]
+  filterset_class = ProductFilter
 
 class SaleViewset(viewsets.ModelViewSet):
   queryset = Sale.objects.all()
