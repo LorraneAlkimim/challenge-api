@@ -112,7 +112,8 @@ class CommissionViewset(APIView):
         end_date = request.GET.get("end_date")
 
         sellers = Seller.objects.all()
-        results = []
+        commissions = []
+        total_value = 0
 
         for seller in sellers:
             sales = Sale.objects.filter(
@@ -121,14 +122,21 @@ class CommissionViewset(APIView):
             sales_quantity = sales.count()
 
             total_commission = sum(sale.calculate_total_commission() for sale in sales)
+            total_value += total_commission
 
             seller_data = {"seller_code": seller.seller_code, "name": seller.name}
-            result = {
+            commission_data = {
                 "seller": seller_data,
                 "sales_quantity": sales_quantity,
                 "value": total_commission,
             }
 
-            results.append(result)
+            if sales_quantity > 0:
+                commissions.append(commission_data)
+
+        results = {
+            "total": total_value,
+            "commissions": commissions
+        }
 
         return Response(results)
