@@ -26,7 +26,15 @@ Para o desenvolvimento dessa aplicação foram utilizadas as seguintes tecnologi
 
 ## Como utilizar
 
-1. Crie e ative o ambiente virtual
+1. Baixe a versão 3.10 do Python
+
+2. Clone este repositório
+
+```
+git clone https://github.com/LorraneAlkimim/challenge-api.git
+```
+
+3. Crie e ative o ambiente virtual
 
 ```
 python -m venv venv
@@ -34,25 +42,25 @@ python -m venv venv
 source env/bin/activate
 ```
 
-2. Instale as dependências
+4. Instale as dependências
 
 ```
 pip install -r requirements.txt
 ```
 
-3. Aplique as migrações
+5. Aplique as migrações
 
 ```
 python manage.py migrate
 ```
 
-4. Crie um super usuário
+6. Crie um super usuário
 
 ```
 python manage.py createsuperuser
 ```
 
-5. Execute a aplicação
+7. Execute a aplicação
 
 ```
 python manage.py runserver
