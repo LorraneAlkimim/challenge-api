@@ -26,7 +26,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class SaleProductSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(source="product.id", read_only=True)
+    id = serializers.CharField(source="product.id", read_only=True)
+    code = serializers.CharField(source="product.code", read_only=True)
     description = serializers.CharField(source="product.description", read_only=True)
     price = serializers.DecimalField(
         source="product.price", max_digits=10, decimal_places=2, read_only=True
@@ -38,6 +39,7 @@ class SaleProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = SaleProduct
         fields = [
+            "id",
             "code",
             "description",
             "quantity",
@@ -95,7 +97,6 @@ class SaleCreateSerializer(serializers.ModelSerializer):
         fields = ["date", "customer", "seller", "products"]
 
     def create(self, validated_data):
-        print("TESTEE: ", validated_data)
         products = validated_data.pop("products", [])
 
         if not products:
