@@ -126,7 +126,7 @@ class Sale(models.Model):
     products = models.ManyToManyField(Product, through="SaleProduct")
 
     class Meta:
-        ordering = ["date", "invoice_code"]
+        ordering = ["-date", "invoice_code"]
         db_table = "sale"
 
     def __str__(self):
