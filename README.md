@@ -4,6 +4,8 @@
 [![Django](https://img.shields.io/badge/django-%23092E20.svg?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![DjangoREST](https://img.shields.io/badge/DJANGO-REST-ff1709?style=flat&logo=django&logoColor=white&color=ff1709&labelColor=gray)](https://www.django-rest-framework.org/)
 
+Acesse em: https://amcom-project.onrender.com/api/
+
 ## Sobre o projeto
 
 Esta é uma API REST utilizada para registrar vendas e calcular a comissão dos vendedores com base nas vendas feitas em dado período e nos percentuais de comissão cadastrados nos produtos vendidos.
