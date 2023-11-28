@@ -154,7 +154,7 @@ class Sale(models.Model):
 
 class SaleProduct(models.Model):
     product = models.ForeignKey("Product", on_delete=models.CASCADE)
-    sale = models.ForeignKey("Sale", on_delete=models.CASCADE)
+    sale = models.ForeignKey("Sale", on_delete=models.CASCADE, to_field="invoice_code")
     quantity = models.IntegerField(default=1)
 
     class Meta:
