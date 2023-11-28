@@ -79,7 +79,7 @@ class Product(models.Model):
     def __str__(self):
         return self.description
 
-    def calculate_product_commission_percentage(self):
+    def calculate_product_commission_percentage(self, weekday):
         """
         Calculates the applicable commission percentage based on the current day of the week.
 
@@ -92,11 +92,9 @@ class Product(models.Model):
         range, or returns the product's own percentage if it is within the range.
         """
 
-        current_weekday = datetime.today().weekday()
-
         try:
             percentages_by_weekday = CommissionPercentageByWeekday.objects.get(
-                weekday=current_weekday
+                weekday=weekday
             )
             minimum_percentage = percentages_by_weekday.minimum_percentage
             maximum_percentage = percentages_by_weekday.maximum_percentage
@@ -170,7 +168,8 @@ class SaleProduct(models.Model):
 
     def calculate_product_commission(self):
         product_total_price = self.calculate_total_price()
+        weekday = self.sale.date.weekday()
         product_commission = (
-            self.product.calculate_product_commission_percentage() / 100
+            self.product.calculate_product_commission_percentage(weekday) / 100
         ) * product_total_price
         return round(product_commission, 2)

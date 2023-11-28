@@ -15,14 +15,9 @@ class SellerSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    commission_percentage = serializers.SerializerMethodField()
-
     class Meta:
         model = Product
         fields = "__all__"
-
-    def get_commission_percentage(self, obj):
-        return obj.calculate_product_commission_percentage()
 
 
 class SaleProductSerializer(serializers.ModelSerializer):
@@ -53,7 +48,8 @@ class SaleProductSerializer(serializers.ModelSerializer):
         return obj.calculate_total_price()
 
     def get_commission_percentage(self, obj):
-        return obj.product.calculate_product_commission_percentage()
+        weekday = obj.sale.date.weekday() if hasattr(obj, "sale") and obj.sale else None
+        return obj.product.calculate_product_commission_percentage(weekday)
 
     def get_commission(self, obj):
         return obj.calculate_product_commission()
